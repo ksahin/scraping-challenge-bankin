@@ -1,12 +1,16 @@
 package fr.kevin.ScrapingChallengeBankin;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -38,16 +42,53 @@ public class App{
     private static final String baseUrl = "https://web.bankin.com/challenge/index.html" ;
     private static final Logger LOGGER = Logger.getLogger(App.class.getName());
     
+    
+    /*	Set chromeDriverPath
+     *  chromeDriverPath should be in a config.properties file
+     *  Exit if any problem found
+     */
+    static {
+    	InputStream input = null;
+		try {
+			input = new FileInputStream("config.properties");
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+			LOGGER.severe("Could not find config.properties, quitting");
+			System.exit(1);
+		}
+    	Properties properties = new Properties();
+    	try {
+			properties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+			LOGGER.severe("Error loading property file, quitting");
+			System.exit(1);
+		}
+    	String  chromeDriverPath = properties.getProperty("chromeDriverPath");
+    	File f = new File(chromeDriverPath);
+    	if(!f.exists()){
+    		LOGGER.severe("The provided chromeDriverPath does not exist, quitting");
+			System.exit(1);
+    	}
+    	System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+    }
+    
+    
     public static void main( String[] args ) throws JsonProcessingException, InterruptedException{
     	
     	
         LOGGER.info("Starting");
+        
+        
+    	// TODO: make this shit configurable
+		
+		
         int cpt = 0 ;
         List<BankAccountOperation> operations = new ArrayList<BankAccountOperation>();
         
         // Thread number hardcoded for the moment
         // TODO: benchmark / fine tune this by n° of core available on the host machine
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newFixedThreadPool(5);
         Set<Callable<List<BankAccountOperation>>> callables = new HashSet<Callable<List<BankAccountOperation>>>();
         
         // After https://web.bankin.com/challenge/index.html?start=4950 it seems like there isn't any more bank account operations

@@ -31,8 +31,6 @@ public class BankAccountOperationFetcher implements Callable<List<BankAccountOpe
 	
 	
 	public List<BankAccountOperation> call() throws Exception {
-		// TODO: make this shit configurable
-		System.setProperty("webdriver.chrome.driver", "/Users/kevin/Downloads/chromedriver");
     	ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
         WebDriver driver = new ChromeDriver(options);
