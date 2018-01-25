@@ -24,6 +24,8 @@ For the moment, this script is able to retrieve the 5000 bank account operations
 This is ***bad*** . 
 Basically there are only 100 requests to make ( 50 items / request), it shouldn't take that long, but because I didn't identify every blocking scenarios for the parsing, I had to make lots of retries everywhere, slowing down the whole process. 
 
+All transactions are generated client side, using the start parameter as an offset, and some others like slowmode/failmode to generate different cases, so we could only load the page once, with the script, and execute the generate() / doGenerate() function to extract all transactions. But would that still be considered web scraping ? On a real banking website, that would not be possible to do that !
+
 ## TODO
 
 * Override setTimeOut to speed up everything
